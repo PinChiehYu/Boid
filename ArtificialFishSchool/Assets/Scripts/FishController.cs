@@ -26,39 +26,38 @@ public class FishController : MonoBehaviour
 
 	public void Steering ()
     {
-        List<GameObject> fishlist = TankManager.Instance.GetFishList();
+        List<FishController> fishControllerList = TankManager.Instance.GetControllerList();
         Vector3 leaveforce = Vector3.zero , averageposition = Vector3.zero, averagevelocity = Vector3.zero;
         float separationcounter = 0, cohesioncounter = 0, alignmentcounter = 0;
-        foreach (GameObject fish in fishlist)
+        foreach (FishController fishcontroller in fishControllerList)
         {
-            FishController fishcontroller = fish.GetComponent<FishController>();
+            if (fishcontroller == this)
+            {
+                continue;
+            }
+
+            float distance = Vector3.Distance(fishcontroller.GetPosition(), GetPosition());
             if (enableBehaviorList[BehaviorType.Separation])
             {
-                if (fish != gameObject)
+                if (distance < TankManager.Instance.GetCrowdDistance())
                 {
-                    float distance = Vector3.Distance(fishcontroller.GetPosition(), fishState.Position);
-                    if (distance < TankManager.Instance.GetCrowdDistance())
-                    {
-                        Vector3 repulsiveforce = GetPosition() - fishcontroller.GetPosition();
-                        repulsiveforce = repulsiveforce.normalized / distance;
-                        leaveforce += repulsiveforce;
-                        separationcounter++;
-                    }
+                    Vector3 repulsiveforce = GetPosition() - fishcontroller.GetPosition();
+                    repulsiveforce = repulsiveforce.normalized / distance;
+                    leaveforce += repulsiveforce;
+                    separationcounter++;
                 }
             }
             if (enableBehaviorList[BehaviorType.Cohesion])
             {
-                float distance = Vector3.Distance(fishcontroller.GetPosition(), GetPosition());
-                if (fish != gameObject && fishcontroller.GetGroupID() == groupID && distance < TankManager.Instance.GetNeighborDistance())
+                if (fishcontroller.GetGroupID() == groupID && distance < TankManager.Instance.GetNeighborDistance())
                 {
-                    averageposition += fish.transform.position;
+                    averageposition += fishcontroller.GetPosition();
                     cohesioncounter++;
                 }
             }
             if (enableBehaviorList[BehaviorType.Alignment])
             {
-                float distance = Vector3.Distance(fishcontroller.GetPosition(), GetPosition());
-                if (fish != gameObject && fishcontroller.GetGroupID() == groupID && distance < TankManager.Instance.GetNeighborDistance())
+                if (fishcontroller.GetGroupID() == groupID && distance < TankManager.Instance.GetNeighborDistance())
                 {
                     averagevelocity += fishcontroller.GetVelocity();
                     alignmentcounter++;
@@ -66,8 +65,7 @@ public class FishController : MonoBehaviour
             }
             if (enableBehaviorList[BehaviorType.Evasion])
             {
-                float distance = Vector3.Distance(fishcontroller.GetPosition(), GetPosition());
-                if (fish != gameObject && predatorIDList.Contains(fishcontroller.GetGroupID()) && distance < TankManager.Instance.GetNeighborDistance())
+                if (predatorIDList.Contains(fishcontroller.GetGroupID()) && distance < TankManager.Instance.GetNeighborDistance())
                 {
                     Vector3 predictposition = fishcontroller.GetPosition() + fishcontroller.GetVelocity() * distance / fishState.MaxVelocity;
                     Flee(predictposition);
@@ -92,6 +90,8 @@ public class FishController : MonoBehaviour
         Containment();
         ObstacleAvoidance();
         Pursuit();
+
+        Wander();
     }
 
     public void Locomotion()
@@ -138,12 +138,18 @@ public class FishController : MonoBehaviour
 
     private void Flee(Vector3 target, float speedration = 1f)
     {
-        ApplySteeringForce(fishState.Position - target, speedration);
+        ApplySteeringForce(GetPosition() - target, speedration);
     }
 
     private void Wander()
     {
-        ApplySteeringForce(fishState.Velocity);
+        if (enableBehaviorList[BehaviorType.Wander])
+        {
+            if (fishState.currentforce == Vector3.zero)
+            {
+                ApplySteeringForce(fishState.Velocity);
+            }
+        }
     }
 
     private void ObstacleAvoidance()
@@ -154,7 +160,7 @@ public class FishController : MonoBehaviour
             if (Physics.SphereCast(GetPosition(), 1.5f, GetVelocity(), out hit, 10f, LayerMask.GetMask("Obstacle")))
             {
                 Debug.DrawLine(GetPosition(), hit.point, Color.red);
-                ApplySteeringForce(hit.normal);
+                ApplySteeringForce(hit.normal, 10 / hit.distance);
             }
         }
     }

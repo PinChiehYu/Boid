@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class FishFactory : MonoBehaviour{
+public class FishFactory {
 
     private Dictionary<string, FishSetting> FishSettingDictionary;
-
-    public GameObject CreateFish(string fishsettingname)
-    {
-        return new GameObject();
-    }
 
     public GameObject CreateFish(FishSetting fishsetting)
     {
@@ -19,7 +14,7 @@ public class FishFactory : MonoBehaviour{
         {
             enablebehavior[b] = true;
         }
-        GameObject fishTemplate = Instantiate(fishsetting.Prefab);
+        GameObject fishTemplate = UnityEngine.Object.Instantiate(fishsetting.Prefab);
         fishTemplate.AddComponent<FishController>();
         fishTemplate.GetComponent<FishController>().Initialize(fishsetting.GroupID, enablebehavior, fishsetting.PreyIDList, fishsetting.PredatorIDList);
 

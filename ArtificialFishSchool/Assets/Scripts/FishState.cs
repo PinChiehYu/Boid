@@ -16,7 +16,7 @@ public class FishState {
     Dictionary<BehaviorType, Task> TaskList;
 
     private GameObject fishPrefab;
-    private Vector3 currentforce;
+    public Vector3 currentforce;
 
     public void Initialize(GameObject prefab)
     {
@@ -56,5 +56,4 @@ public class FishState {
     {
         currentforce += force;
     }
-
 }

@@ -11,6 +11,5 @@ public class FoodController : MonoBehaviour {
             float tanksize = TankManager.Instance.GetTankSize();
             transform.position = new Vector3(Random.Range(-1 * tanksize, tanksize), Random.Range(-1 * tanksize, tanksize), Random.Range(-1 * tanksize, tanksize));
         }
-
     }
 }

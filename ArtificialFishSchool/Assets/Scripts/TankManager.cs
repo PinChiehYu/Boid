@@ -27,7 +27,7 @@ public class TankManager : MonoBehaviour {
     [SerializeField]
     private float TankSize;
 
-    private List<GameObject> FishList;
+    private List<FishController> FishControllerList;
     private List<GameObject> FoodList;
 
     [SerializeField]
@@ -58,7 +58,7 @@ public class TankManager : MonoBehaviour {
         Instantiate(WallClone, new Vector3(0, 0, TankSize), Quaternion.Euler(-90f, 0, 0f));
         Instantiate(WallClone, new Vector3(0, 0, -1 * TankSize), Quaternion.Euler(90f, 0, 0f));
 
-        FishList = new List<GameObject>();
+        FishControllerList = new List<FishController>();
         FoodList = new List<GameObject>();
 
         fishFactory = new FishFactory();
@@ -71,7 +71,7 @@ public class TankManager : MonoBehaviour {
         {
             CreateAndAddFish(fishsettingB);
         }
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
             CreateAndAddFish(predatorsetting);
         }
@@ -79,21 +79,21 @@ public class TankManager : MonoBehaviour {
 
     public void Update()
     {
-        foreach (GameObject fish in FishList)
+        foreach (FishController fish in FishControllerList)
         {
-            fish.GetComponent<FishController>().Steering();
+            fish.Steering();
         }
 
-        foreach (GameObject fish in FishList)
+        foreach (FishController fish in FishControllerList)
         {
-            fish.GetComponent<FishController>().Locomotion();
+            fish.Locomotion();
         }
     }
     
     private void CreateAndAddFish(FishSetting setting)
     {
-        GameObject fishclone = fishFactory.CreateFish(setting);
-        FishList.Add(fishclone);
+        FishController fishController = fishFactory.CreateFish(setting).GetComponent<FishController>();
+        FishControllerList.Add(fishController);
     }
 
     public float GetTankSize()
@@ -101,9 +101,9 @@ public class TankManager : MonoBehaviour {
         return TankSize;
     }
 
-    public List<GameObject> GetFishList()
+    public List<FishController> GetControllerList()
     {
-        return FishList;
+        return FishControllerList;
     }
 
     public List<GameObject> GetFoodList()

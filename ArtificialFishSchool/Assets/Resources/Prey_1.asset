@@ -3,16 +3,17 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56495b981ff29324d980539278c8c41a, type: 3}
   m_Name: Prey_1
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 1807404702603584, guid: 45ad117036c19b24dbd0f62cdd35f5cc, type: 2}
+  Prefab: {fileID: 1807404702603584, guid: 45ad117036c19b24dbd0f62cdd35f5cc, type: 3}
   GroupID: 0
-  BehaviorList: 050000000600000007000000080000000300000009000000
+  BehaviorList: 0500000006000000070000000800000003000000090000000a000000
   PreyIDList: 
   PredatorIDList: 03000000
